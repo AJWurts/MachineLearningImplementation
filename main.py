@@ -1,6 +1,29 @@
 from logisticregression import LogisticRegression
+from nplogreg import LogRegNp
 from preprocessing import load_to_array
 from random import shuffle
+import numpy as np
+
+def f_measure(predictor, X, y):
+
+  true_positive = 0
+  false_positive = 0
+  true_negative = 0
+  false_negative = 0
+
+  for i in range(len(X)):
+    prediction = clf.predict([X[i]])
+    if y[i] == 1:
+      if prediction == 1:
+        true_positive += 1
+      else:
+        false_positive += 1
+    elif y[i] == 0:
+      if prediction == 0:
+        true_negative += 1
+      else:
+        false_negative += 1
+
 
 def load_data(fileName):
     data = []
@@ -17,7 +40,9 @@ def load_data(fileName):
 
 
 
-data = load_data('best.csv')
+data = load_data('best2.csv')
+
+# data = data / np.linalg.norm(data)
 # print(data)
 shuffle(data)
 
@@ -26,25 +51,27 @@ shuffle(data)
 # But should be able to test it with LogisticRegression from sklearn soon, and then my code
 
 
-train_X = [d[:24] for d in data[:int(len(data) * .8)]]
-train_y = [d[24] for d in data[:int(len(data) * .8)]]
+train_X = np.array([d[:24] for d in data[:int(len(data) * .8)]])
+train_X = train_X / np.linalg.norm(train_X)
+train_y = np.array([d[24] for d in data[:int(len(data) * .8)]])
 
-test_X = [d[:24] for d in data[:int(len(data) * 0.2)]]
-test_y = [d[24] for d in data[:int(len(data) * 0.2)]]
+test_X = np.array([d[:24] for d in data[int(len(data) * 0.2):]])
+test_X = test_X / np.linalg.norm(test_X)
+test_y = np.array([d[24] for d in data[int(len(data) * 0.2):]])
 
-log = LogisticRegression()
+  
+log = LogRegNp()
 
-log.fit(train_X, train_y)
+log.fit(train_X, train_y)#, alpha=0.0001, epsilon=0.000000000000000001)
+# log.load_weights('weights_logreg.ml')
+log.save_weights("weights_logreg.ml")
 
+training_set = []
+test_set = []
+for lam_bda in range(-2, 4, 0.2):
+    log.fit(train_X, train_y)
+    training_set.append([lam_bda, f_measure(log, train_X, train_y)])
+    test_set.append([lam_bda, f_measure(log, test_X, test_y)])
 
-total = 0
-correct = 0
-for x, y in zip(test_X, test_y):
-    x = log.predict([x])
-    if x[0] == y:
-        correct += 1
-    
-    total += 1
-        
-
-print("Accuracy: ", correct / total * 100)
+with open('results.txt', 'w') as theFile:
+    theFile.wri()

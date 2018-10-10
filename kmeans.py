@@ -1,4 +1,5 @@
 import random
+from visualization import plot_points
 
 class Point:
   def __init__(self, x, y, id=None, cluster=None):
@@ -42,6 +43,13 @@ class Point:
     else:
       return self.y
 
+  def __eq__(self, other):
+    return self.x == other.x and self.y == other.y
+
+  
+  def __ne__(self, other):
+    return self.x != other.x or self.y != other.y
+
 
 class Cluster:
   def __init__(self, center, id, points=None):
@@ -62,14 +70,23 @@ class Cluster:
       y_sum += p.y
     
     self.center = Point(x_sum / len(self.points), y_sum / len(self.points))
+  
+  def clear(self):
+    self.points.clear()
 
   def addPoint(self, point):
     self.points.append(point)
   
   def remPoint(self, point):
     for i, p in enumerate(self.points):
-      if p.id == point.id:
+      if p == point:
         del self.points[i]
+        return True
+    return False
+
+  def __repr__(self):
+    return str(self.center)
+
 
 
 
@@ -86,51 +103,62 @@ def getPointsFromFile(file):
     return points
 
 
-def kmeans(points, num_clusters):
-  minVal = min([p.min() for p in points])
-  maxVal = max([p.max() for p in points])
+def kmeans(points, num_clusters, plot=False):
+  minX = min([p.x for p in points])
+  maxX = max([p.x for p in points])
+  minY = min([p.y for p in points])
+  maxY = max([p.y for p in points])
+  print(minX, maxY, minY, maxY)
   clusters = []
+
   for i in range(num_clusters):
-    x = (random.random() * (maxVal - minVal)) + minVal
-    y = (random.random() * (maxVal - minVal)) + minVal
+    x = random.uniform(minX, maxX)
+    y = random.uniform(minY, maxY)
     clusters.append(Cluster(Point(x, y), i))
 
-  for p in points:
+  while True:
+    for p in points:
       min_dist = None
       min_clust_index = None
       for i, c in enumerate(clusters):
         dist = p.dist_to(c.center)
+
         if min_dist is None or dist < min_dist:
           min_dist = dist
           min_clust_index = i
-      min_cluster = clusters[min_clust_index]
-      min_cluster.addPoint(p)
+      clusters[min_clust_index].addPoint(p)
 
-      
-  while True:
+
+    
+    if plot:
+      img = plot_points([Point(-100, -100)])
+      colors = ['red', 'blue', 'yellow']
     anyChange = False
-    for c in clusters:
-      for p in points:
-        min_dist = None
-        min_cluster = None
-        for i, clust in enumerate(clusters):
-          dist = p.dist_to(c.center)
-          if min_dist is None or dist < min_dist:
-            min_dist = dist
-            min_cluster = clust
-
-        
-        if min_cluster != c:
-          c.remPoint(p)
-          min_cluster.addPoint(p)
-          anyChange = True
-
-
-    for c in clusters:
+    for i, c in enumerate(clusters):
+      oldCenter = c.center
       c.reCalcCenter()
+      if oldCenter != c.center:
+        anyChange = True
+
+      if plot:
+        img = plot_points(c.points, fill=colors[i], image=img)
+        img = plot_points([c.center], fill='green', image=img)
+
+  
+    if plot:
+      img.show()
+      input() # Pauses after each step
+
+
     
     if not anyChange:
       break
+    else:
+      [c.clear() for c in clusters]
+
+
+
+    
 
   return clusters
 
@@ -138,8 +166,22 @@ def kmeans(points, num_clusters):
 
 
 points = getPointsFromFile('cluster_data.txt')
+minX = min([p.x for p in points])
+maxX = max([p.x for p in points])
+minY = min([p.y for p in points])
+maxY = max([p.y for p in points])
+pRange = [minX, maxX, minY, maxY]
+clusters = kmeans(points, 6)
 
-clusters = kmeans(points, 10)
+img, _ = plot_points([Point(-100, -100)], fill='black')
+img.show()
+colors = ['red', 'blue', 'white', 'purple', 'orange', 'navy']
+for i, c in enumerate(clusters):
+  img, _ = plot_points(c.points, fill=colors[i], image=img, pRange=pRange, axis=True)
+  img, _ = plot_points([c.center], fill='green', image=img, pRange=pRange, label='Cluster ' + str(i), axis=True)
+
+
+img.show()
+
 print(clusters)
-
 
