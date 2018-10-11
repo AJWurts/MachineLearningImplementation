@@ -12,7 +12,12 @@ def f_measure(predictor, X, y):
   false_negative = 0
 
   for i in range(len(X)):
-    prediction = clf.predict([X[i]])
+    prediction = predictor.predict(X[i])
+    print(prediction)
+    if prediction > 0.5:
+      prediction = 1
+    else:
+      prediction = 0
     if y[i] == 1:
       if prediction == 1:
         true_positive += 1
@@ -23,6 +28,16 @@ def f_measure(predictor, X, y):
         true_negative += 1
       else:
         false_negative += 1
+  
+  try:
+    precision = true_positive / (true_positive + false_positive)
+    recall = true_positive / (true_positive + false_negative)
+  except:
+    return np.nan
+
+  if true_positive == 0:
+    return 0
+  return (2 * precision * recall) / (precision + recall)
 
 
 def load_data(fileName):
@@ -68,10 +83,11 @@ log.save_weights("weights_logreg.ml")
 
 training_set = []
 test_set = []
-for lam_bda in range(-2, 4, 0.2):
-    log.fit(train_X, train_y)
+for lam_bda in np.arange(-2.0, 4.0, 0.2):
+    log.fit(train_X, train_y, lam_bda=lam_bda)
     training_set.append([lam_bda, f_measure(log, train_X, train_y)])
     test_set.append([lam_bda, f_measure(log, test_X, test_y)])
 
 with open('results.txt', 'w') as theFile:
-    theFile.wri()
+    theFile.write(str(training_set) + '\n')
+    theFile.write(str(test_set))

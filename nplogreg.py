@@ -44,16 +44,16 @@ class LogRegNp:
 
 
   
-  def fit(self, X, y, alpha=1000, epsilon=0.1, lam_bda=1, cycles=300000):
+  def fit(self, X, y, alpha=500, epsilon=0.1, lam_bda=1, cycles=1000000):
 
     self.w = np.zeros(len(X[0]))
     self.m = len(X)
     self.n = len(X[0])
     
     cost_history = []
-
+    old_cost = self.cost_function(X, y)
     for _ in range(cycles):
-      
+    
       predictions = self.predict(X)
 
       gradient = np.dot(X.T, predictions - y) + (lam_bda / self.m) * sum(self.w)
@@ -62,6 +62,9 @@ class LogRegNp:
 
       self.w -= gradient
      
+      current_cost = self.cost_function(X, y)
+      if abs(old_cost - current_cost) < 0.001:
+        break
 
       # cost = self.cost_function(X, y)
       # print(cost)
