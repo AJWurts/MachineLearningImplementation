@@ -58,7 +58,12 @@ for key in count.keys():
 
     
 
+""""
+# Start out with list of data points
+q = number of clusters
+for point in data:
+    create cluster if not within range and less than given number of clusters
+    else add to nearest cluster
 
 
-
-
+"""
