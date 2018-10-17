@@ -198,23 +198,27 @@ def kmeans(points, num_clusters, plot=False):
   
 if __name__ == "__main__":
 
-  points = getPointsFromFile('cluster_data.txt')
+  points = getPointsFromFile('cluster_data.txt') # Loads points from Fil
+  # Points are in format [Point(x,y), Point(x,y), ..., Point(x,y)]
+  # Where Point is a point object defined at the top of the file\
   minX = min([p.x for p in points])
   maxX = max([p.x for p in points])
   minY = min([p.y for p in points])
   maxY = max([p.y for p in points])
-  pRange = [minX, maxX, minY, maxY]
-  clusters = kmeans(points, 6)
+  pRange = [minX, maxX, minY, maxY] # Gets maximum and minimum values to plot effectively
+  clusters = kmeans(points, 6) # Runs K-Means
 
-  img, _ = plot_points([Point([-100 for _ in points[0].attrs])], fill='black')
-  img.show()
-  colors = ['red', 'blue', 'white', 'purple', 'orange', 'navy']
+  img, _ = plot_points([Point([-100 for _ in points[0].attrs])], fill='black') # Creates empty image, just leave this code
+
+  colors = ['red', 'blue', 'white', 'purple', 'orange', 'navy'] # Available colors for clusters
   for i, c in enumerate(clusters):
-    img, _ = plot_points(c.points, fill=colors[i], image=img, pRange=pRange, axis=True)
+    # Plots individual points from the cluster
+    img, _ = plot_points(c.points, fill=colors[i], image=img, pRange=pRange, axis=True) 
+    # Plots the clusters centers and labels them
     img, _ = plot_points([c.center], fill='green', image=img, pRange=pRange, label='Cluster ' + str(i), axis=True)
 
 
-  img.show()
+  img.show() # Displays the new image.
 
   print(clusters)
 
