@@ -54,7 +54,7 @@ class Point:
     if len(self.attrs) != len(other.attrs):
       return False
     
-    for a in range(len(self.attrs)):
+    for i in range(len(self.attrs)):
       if (type(self.attrs[i]) is int or type(self.attrs[i]) is float)\
           and (type(other.attrs[i] is int or type(other.attrs[i] is float))):
           if self.attrs[i] != other.attrs[i]:
@@ -79,10 +79,10 @@ class Cluster:
   def reCalcCenter(self):
     if len(self.points) == 0:
       return
-    var_sum = [0 for _ in range(len(self.center.args))]
+    var_sum = [0 for _ in self.center.attrs]
 
     for p in self.points:
-      for i in range(len(p)):
+      for i in range(len(p.attrs)):
         var_sum[i] += p[i]
     
     new_attrs = [var_sum[i] / len(self.points) for i in range(len(self.center.attrs))]
@@ -111,14 +111,14 @@ def getMinMax(points):
 
   for p in points:
     for i, a in enumerate(p.attrs):
-      if minMax[i][0] is not None and minMax[i][0] > a:
+      if minMax[i][0] is not None and a < minMax[i][0]:
         minMax[i][0] = a
-      else:
+      elif minMax[i][0] is None:
         minMax[i][0] = a
 
       if minMax[i][1] is not None and minMax[i][1] < a:
-        minMax[i][0] = a
-      else:
+        minMax[i][1] = a
+      elif minMax[i][1] is None:
         minMax[i][1] = a
       
   return minMax
@@ -145,7 +145,7 @@ def kmeans(points, num_clusters, plot=False):
   for i in range(num_clusters):
     attrs = []
     for key in range(len(points[0].attrs)):
-      attrs[key] = random.uniform(minMax[key][0], minMax[key][1])
+      attrs.append(random.uniform(minMax[key][0], minMax[key][1]))
 
     clusters.append(Cluster(Point(attrs), i))
 
@@ -189,10 +189,6 @@ def kmeans(points, num_clusters, plot=False):
     else:
       [c.clear() for c in clusters]
 
-
-
-    
-
   return clusters
 
   
@@ -208,7 +204,7 @@ if __name__ == "__main__":
 
   img, _ = plot_points([Point([-100 for _ in points[0].attrs])], fill='black')
   img.show()
-  colors = ['red', 'blue', 'white', 'purple', 'orange', 'navy']
+  colors = ['red', 'blue', 'white', 'purple', 'orange', 'gray']
   for i, c in enumerate(clusters):
     img, _ = plot_points(c.points, fill=colors[i], image=img, pRange=pRange, axis=True)
     img, _ = plot_points([c.center], fill='green', image=img, pRange=pRange, label='Cluster ' + str(i), axis=True)
