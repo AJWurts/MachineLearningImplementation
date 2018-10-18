@@ -43,20 +43,24 @@ def f_measure(predictor, X, y):
 def load_data(fileName):
     data = []
     with open(fileName, 'r') as theFile:
-        lines = theFile.read().split('\n')
+        lines = theFile.read().split('\n')[1:]
         print(len(lines))
         for i, l in enumerate(lines):
             current = []
             for attr in l.split(',')[:25]:
+              try:
                 current.append(float(attr))
+              except:
+                print(i, l, attr)
             data.append(current)
 
     return data
 
 
 
-data = load_data('best2.csv')
+data = load_data('chronic_kidney_disease_full.1.csv')
 
+print(len(data[0]))
 # data = data / np.linalg.norm(data)
 # print(data)
 shuffle(data)
@@ -66,20 +70,20 @@ shuffle(data)
 # But should be able to test it with LogisticRegression from sklearn soon, and then my code
 
 
-train_X = np.array([d[:24] for d in data[:int(len(data) * .8)]])
-train_X = train_X / np.linalg.norm(train_X)
-train_y = np.array([d[24] for d in data[:int(len(data) * .8)]])
+train_X = np.array([d[:len(d)-2] for d in data[:int(len(data) * .8)]])
+# train_X = train_X / np.linalg.norm(train_X)
+train_y = np.array([d[len(d)-1] for d in data[:int(len(data) * .8)]])
 
-test_X = np.array([d[:24] for d in data[int(len(data) * 0.2):]])
-test_X = test_X / np.linalg.norm(test_X)
-test_y = np.array([d[24] for d in data[int(len(data) * 0.2):]])
+test_X = np.array([d[:len(d)-2] for d in data[int(len(data) * 0.2):]])
+# test_X = test_X / np.linalg.norm(test_X)
+test_y = np.array([d[len(d)-1] for d in data[int(len(data) * 0.2):]])
 
   
 log = LogRegNp()
 
-log.fit(train_X, train_y)#, alpha=0.0001, epsilon=0.000000000000000001)
-# log.load_weights('weights_logreg.ml')
-log.save_weights("weights_logreg.ml")
+# log.fit(train_X, train_y)#, alpha=0.0001, epsilon=0.000000000000000001)
+# # log.load_weights('weights_logreg.ml')
+# log.save_weights("weights_logreg.ml")
 
 training_set = []
 test_set = []

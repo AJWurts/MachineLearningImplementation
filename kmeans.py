@@ -27,8 +27,8 @@ class Point:
   def dist_to(self, other):
     the_sum = 0
     for i in range(len(self.attrs)):
-      if (type(self.attrs[i]) is int or type(self.attrs[i]) is float)\
-          and (type(other.attrs[i] is int or type(other.attrs[i] is float))):
+      # if (type(self.attrs[i]) is int or type(self.attrs[i]) is float)\
+      #     and (type(other.attrs[i] is int or type(other.attrs[i] is float))):
         the_sum += (self.attrs[i] - other.attrs[i]) ** 2
     return the_sum ** 0.5
 
@@ -145,6 +145,7 @@ def kmeans(points, num_clusters, plot=False):
   for i in range(num_clusters):
     attrs = []
     for key in range(len(points[0].attrs)):
+      # attrs.append(0)
       attrs.append(random.uniform(minMax[key][0], minMax[key][1]))
 
     clusters.append(Cluster(Point(attrs), i))
@@ -191,7 +192,20 @@ def kmeans(points, num_clusters, plot=False):
 
   return clusters
 
+def predict(clusters, example):
+  min_dist = None
+  min_clust_index = None
+  for i, c in enumerate(clusters):
+    dist = example.dist_to(c.center)
+
+    if min_dist is None or dist < min_dist:
+      min_dist = dist
+      min_clust_index = i
   
+  return min_clust_index
+
+
+
 if __name__ == "__main__":
 
   points = getPointsFromFile('cluster_data.txt') # Loads points from Fil
