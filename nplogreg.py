@@ -37,7 +37,7 @@ class LogRegNp:
 
 
   
-  def fit(self, X, y, alpha=500, epsilon=0.0001, lam_bda=1, cycles=500000):
+  def fit(self, X, y, alpha=500, epsilon=0.0001, lam_bda=1, cycles=200000):
 
     self.w = np.zeros(len(X[0]))
     self.m = len(X)
