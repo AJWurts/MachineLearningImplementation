@@ -2,7 +2,7 @@
 
 def load_data():
   data = []
-  with open("best2.csv", 'r') as theFile:
+  with open("chronic_kidney_disease_full.1.csv", 'r') as theFile:
       lines = theFile.read().split('\n')
       for i, l in enumerate(lines):
           current = []

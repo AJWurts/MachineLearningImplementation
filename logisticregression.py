@@ -5,12 +5,6 @@ from random import uniform
 import numpy as np
 
 
-"""
-predict(x) = w_0 + w_1*x_1 + ... + w_n*x_n
-
-w_0 = w_0 - a * 1/m * sum([predict(x) - y) * x_j])
-
-"""
 def euclidean(w_old, w_new):
     dist = sum([(w_new[i] - w_old[i]) ** 2 for i in range(len(w_old))]) ** 0.5
     return dist

@@ -14,7 +14,6 @@ def f_measure(predictor, X, y):
 
   for i in range(len(X)):
     prediction = predictor.predict(X[i])
-    print(prediction)
     if prediction > 0.5:
       prediction = 1
     else:
@@ -59,17 +58,17 @@ def load_data(fileName):
 
 
 
-data = load_data('chronic_kidney_disease_full.1.csv')
+data = load_data('chronic_kidney_disease_full.csv')
 
 shuffle(data)
 
 
 train_X = np.array([d[:len(d)-2] for d in data[:int(len(data) * .8)]])
-train_X = train_X / np.linalg.norm(train_X)
+# train_X = train_X / np.linalg.norm(train_X)
 train_y = np.array([d[len(d)-1] for d in data[:int(len(data) * .8)]])
 
 test_X = np.array([d[:len(d)-2] for d in data[int(len(data) * 0.2):]])
-test_X = test_X / np.linalg.norm(test_X)
+# test_X = test_X / np.linalg.norm(test_X)
 test_y = np.array([d[len(d)-1] for d in data[int(len(data) * 0.2):]])
 
   
@@ -86,8 +85,12 @@ for lam_bda in np.arange(-2.0, 4.0, 0.2):
 
 
 plt.plot([v[0] for v in training_set], [v[1] for v in training_set])
+plt.xlabel("Lambda")
+plt.ylabel("F-Measure")
+plt.title("Training Data")
 plt.show()
 plt.plot([v[0] for v in test_set], [v[1] for v in test_set])
+plt.title("Test Data")
 plt.show()
 
 
