@@ -3,6 +3,7 @@ from nplogreg import LogRegNp
 from preprocessing import load_to_array
 from random import shuffle
 import numpy as np
+import matplotlib.pyplot as plt
 
 def f_measure(predictor, X, y):
 
@@ -60,30 +61,19 @@ def load_data(fileName):
 
 data = load_data('chronic_kidney_disease_full.1.csv')
 
-print(len(data[0]))
-# data = data / np.linalg.norm(data)
-# print(data)
 shuffle(data)
-
-# The problem when I stopped was that the number of attributes for every item was inconsistent and the results without ckd were shorters
-# Also there are random strings thrown in there to mess everything up
-# But should be able to test it with LogisticRegression from sklearn soon, and then my code
 
 
 train_X = np.array([d[:len(d)-2] for d in data[:int(len(data) * .8)]])
-# train_X = train_X / np.linalg.norm(train_X)
+train_X = train_X / np.linalg.norm(train_X)
 train_y = np.array([d[len(d)-1] for d in data[:int(len(data) * .8)]])
 
 test_X = np.array([d[:len(d)-2] for d in data[int(len(data) * 0.2):]])
-# test_X = test_X / np.linalg.norm(test_X)
+test_X = test_X / np.linalg.norm(test_X)
 test_y = np.array([d[len(d)-1] for d in data[int(len(data) * 0.2):]])
 
   
 log = LogRegNp()
-
-# log.fit(train_X, train_y)#, alpha=0.0001, epsilon=0.000000000000000001)
-# # log.load_weights('weights_logreg.ml')
-# log.save_weights("weights_logreg.ml")
 
 training_set = []
 test_set = []
@@ -91,6 +81,15 @@ for lam_bda in np.arange(-2.0, 4.0, 0.2):
     log.fit(train_X, train_y, lam_bda=lam_bda)
     training_set.append([lam_bda, f_measure(log, train_X, train_y)])
     test_set.append([lam_bda, f_measure(log, test_X, test_y)])
+
+
+
+
+plt.plot([v[0] for v in training_set], [v[1] for v in training_set])
+plt.show()
+plt.plot([v[0] for v in test_set], [v[1] for v in test_set])
+plt.show()
+
 
 with open('results.txt', 'w') as theFile:
     theFile.write(str(training_set) + '\n')

@@ -22,18 +22,11 @@ class LogRegNp:
 
   def cost_function(self, X, y):
 
-    predictions = self.predict(X)
+    pred = self.predict(X)
 
-    #Take the error when label=1
-    class1_cost = -y*np.log(predictions)
 
-    #Take the error when label=0
-    class2_cost = (1-y)*np.log(1.-predictions)
+    cost = -y*np.log(pred) - (1-y)*np.log(1. - pred)
 
-    #Take the sum of both costs
-    cost = class1_cost - class2_cost
-
-    #Take the average cost
     cost = cost.sum() / self.m
 
     return cost
@@ -44,28 +37,28 @@ class LogRegNp:
 
 
   
-  def fit(self, X, y, alpha=500, epsilon=0.1, lam_bda=1, cycles=1000000):
+  def fit(self, X, y, alpha=500, epsilon=0.0001, lam_bda=1, cycles=500000):
 
     self.w = np.zeros(len(X[0]))
     self.m = len(X)
     self.n = len(X[0])
     
-    cost_history = []
+
     old_cost = self.cost_function(X, y)
     for _ in range(cycles):
     
-      predictions = self.predict(X)
+      pred = self.predict(X)
 
-      gradient = np.dot(X.T, predictions - y) + (lam_bda / self.m) * sum(self.w)
+      grad = np.dot(X.T, pred - y) + (lam_bda / self.m) * sum(self.w)
 
-      gradient = gradient * (alpha / self.m)
+      grad = grad * (alpha / self.m)
 
-      self.w -= gradient
+      self.w -= grad
      
       current_cost = self.cost_function(X, y)
-      if abs(old_cost - current_cost) < 0.001:
+
+
+      if abs(old_cost - current_cost) < epsilon:
         break
-
-      # cost = self.cost_function(X, y)
-      # print(cost)
-
+      
+      old_cost = current_cost
