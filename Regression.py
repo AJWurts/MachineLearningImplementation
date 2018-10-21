@@ -58,17 +58,17 @@ def load_data(fileName):
 
 
 
-data = load_data('chronic_kidney_disease_full.csv')
+data = load_data('chronic_kidney_disease_full.1.csv')
 
 shuffle(data)
 
 
 train_X = np.array([d[:len(d)-2] for d in data[:int(len(data) * .8)]])
-# train_X = train_X / np.linalg.norm(train_X)
+train_X = train_X / np.linalg.norm(train_X)
 train_y = np.array([d[len(d)-1] for d in data[:int(len(data) * .8)]])
 
 test_X = np.array([d[:len(d)-2] for d in data[int(len(data) * 0.2):]])
-# test_X = test_X / np.linalg.norm(test_X)
+test_X = test_X / np.linalg.norm(test_X)
 test_y = np.array([d[len(d)-1] for d in data[int(len(data) * 0.2):]])
 
   
@@ -77,7 +77,7 @@ log = LogRegNp()
 training_set = []
 test_set = []
 for lam_bda in np.arange(-2.0, 4.0, 0.2):
-    log.fit(train_X, train_y, lam_bda=lam_bda)
+    log.fit(train_X, train_y, lam_bda=lam_bda, epsilon=0.0001)
     training_set.append([lam_bda, f_measure(log, train_X, train_y)])
     test_set.append([lam_bda, f_measure(log, test_X, test_y)])
 
